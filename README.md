@@ -37,6 +37,9 @@ Commands:
 !land <airport_id> - Land at a specific airport/carrier
 
 !refuel - Air to air refueling
+
+!bomb <actor_name> - Usefull if you happen to be a bomber!
+
 !cms - Deploy countermeasures
 
 !chaff - Deploy countermeasures to confuse a radar guided missile
@@ -50,3 +53,5 @@ Commands:
 !drop - Jettison all arms
 
 !eject - Leave the vehicle in style!
+
+!kamikaze - Last resort
