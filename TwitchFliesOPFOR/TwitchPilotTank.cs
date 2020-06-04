@@ -37,5 +37,14 @@ namespace TwitchFliesOPFOR
                     return base.Command(command, args);
             }
         }
+
+        public override string SITREP()
+        {
+            GroundUnitSpawn groundSpawn = (GroundUnitSpawn)unitSpawn;
+
+            string output = base.SITREP();
+            output += "Velocity: " + Mathf.Round(groundSpawn.actor.velocity.magnitude * 1.94384f) + " knots\n";
+            return output;
+        }
     }
 }

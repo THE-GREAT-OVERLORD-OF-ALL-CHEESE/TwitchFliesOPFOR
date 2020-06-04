@@ -18,27 +18,19 @@ namespace TwitchFliesOPFOR
         private Client _client;
         TwitchPilotManager manager;
         TwitchChat chat;
-        VTOLAPI vtol;
 
         public override void ModLoaded()
         {
             string address = Directory.GetCurrentDirectory() + @"\VTOLVR_ModLoader\mods\Twitch Flies OPFOR\";
             USERNAME_FROM_OAUTH_TOKEN = File.ReadAllText(address + "channel.txt");
             OAUTH_TOKEN = File.ReadAllText(address + "token.txt");
-            help = File.ReadAllText(address + "help.txt");
 
             VTOLAPI.SceneLoaded += SceneLoaded;
-
-            vtol = new VTOLAPI();
-
-            //USERNAME_FROM_OAUTH_TOKEN = File.ReadAllText("username.txt")
-            //OAUTH_TOKEN = File.ReadAllText("token.txt");
 
             chat = new TwitchChat();
             chat.StartTwitchChat();
             manager = new TwitchPilotManager();
             manager.Start();
-            manager.vtol = vtol;
             ConnectTwitchClient();
 
             base.ModLoaded();
@@ -46,7 +38,7 @@ namespace TwitchFliesOPFOR
 
         private void SceneLoaded(VTOLScenes scene)
         {
-            chat.Create3DChat(vtol.GetPlayersVehicleGameObject(), VTOLAPI.GetPlayersVehicleEnum());
+            chat.Create3DChat(VTOLAPI.instance.GetPlayersVehicleGameObject(), VTOLAPI.GetPlayersVehicleEnum());
         }
 
         void ConnectTwitchClient()
@@ -104,7 +96,7 @@ namespace TwitchFliesOPFOR
                     response = manager.Release(username);
                     break;
                 case "help":
-                    response = help;
+                    response = "Go here for commands: https://github.com/THE-GREAT-OVERLORD-LORD-OF-ALL-CHEESE/TwitchFliesOPFOR";
                     break;
                 case "n":
                 case "north":
@@ -160,11 +152,8 @@ namespace TwitchFliesOPFOR
                 case "refuel":
                     response = manager.Command(username, TwitchPilotBase.PilotCommand.A2ARefuel, args);
                     break;
-                case "fox2":
-                    response = manager.Command(username, TwitchPilotBase.PilotCommand.Fox2, args);
-                    break;
-                case "fox3":
-                    response = manager.Command(username, TwitchPilotBase.PilotCommand.Fox3, args);
+                case "bomb":
+                    response = manager.Command(username, TwitchPilotBase.PilotCommand.Bomb, args);
                     break;
                 case "cm":
                 case "cms":
@@ -198,6 +187,9 @@ namespace TwitchFliesOPFOR
                     break;
                 case "eject":
                     response = manager.Command(username, TwitchPilotBase.PilotCommand.Eject, args);
+                    break;
+                case "kamikaze":
+                    response = manager.Command(username, TwitchPilotBase.PilotCommand.Kamikaze, args);
                     break;
                 default:
                     _client.SendMessage(e.Command.ChatMessage.Channel, $"Unknown chat command: {e.Command.CommandIdentifier}{e.Command.CommandText}");
@@ -240,6 +232,12 @@ namespace TwitchFliesOPFOR
                 }
                 GUI.TextArea(new Rect(1920 - 400, 100, 100, 100), temp2);
             }
+            string temp3 = "";
+            foreach (TwitchPilotBase pilot in manager.pilots)
+            {
+                temp3 += pilot.SITREP() + "\n";
+            }
+            GUI.TextArea(new Rect(1920 - 500, 200, 200, 700), temp3);
         }
 
         public string StringCombiner(List<string> args) {

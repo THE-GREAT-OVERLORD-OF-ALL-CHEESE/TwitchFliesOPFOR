@@ -99,7 +99,7 @@ namespace TwitchFliesOPFOR
             for (int i = 0; i < messages.Count; i++) {
                 temp += messages[i].user + ": " + messages[i].message + "\n";
             }
-            GUI.TextArea(new Rect(100, 100, 500, 600), temp);
+            GUI.TextArea(new Rect(100, 100, 500, 300), temp);
         }
     }
 }

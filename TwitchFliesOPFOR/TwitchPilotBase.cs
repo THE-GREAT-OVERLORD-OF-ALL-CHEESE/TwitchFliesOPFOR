@@ -40,15 +40,15 @@ namespace TwitchFliesOPFOR
             TakeOff,
             RTB,
             A2ARefuel,
-            Fox2,
-            Fox3,
+            Bomb,
             CM,
             Chaff,
             Flare,
             JetisonEmpty,
             JetisonFuel,
             Jetison,
-            Eject
+            Eject,
+            Kamikaze
         }
 
         public void Start()
@@ -107,6 +107,21 @@ namespace TwitchFliesOPFOR
             }
         }
 
+        public virtual string SITREP()
+        {
+            string output = actor.name + "\n";
+            output += "Controlled by: " + username + "\n";
+            output += "Health: " + unitSpawn.health.currentHealth + "/" + unitSpawn.health.maxHealth + "\n";
+            if (unitSpawn.engageEnemies)
+            {
+                output += "Fire at will!\n";
+            }
+            else {
+                output += "Cease fire.\n";
+            }
+            return output;
+        }
+
         public Actor GetActor(string name)
         {
             Actor result = null;
@@ -123,6 +138,12 @@ namespace TwitchFliesOPFOR
         {
             UnitReference reference = new UnitReference(target.unitSpawn.unitID);
             return reference;
+        }
+
+        public int GetHeading(Transform transform)
+        {
+            int heading = Mathf.RoundToInt(Mathf.Atan2(transform.forward.x, transform.forward.z) * Mathf.Rad2Deg);
+            return heading;
         }
     }
 }

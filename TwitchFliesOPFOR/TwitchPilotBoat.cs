@@ -34,5 +34,15 @@ namespace TwitchFliesOPFOR
                     return base.Command(command, args);
             }
         }
+
+        public override string SITREP()
+        {
+            AISeaUnitSpawn shipSpawn = (AISeaUnitSpawn)unitSpawn;
+
+            string output = base.SITREP();
+            output += "Heading: " + GetHeading(shipSpawn.actor.transform) + "\n";
+            output += "Velocity: " + Mathf.Round(shipSpawn.actor.velocity.magnitude * 1.94384f) + " knots\n";
+            return output;
+        }
     }
 }

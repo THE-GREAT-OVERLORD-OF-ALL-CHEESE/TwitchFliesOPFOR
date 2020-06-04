@@ -68,6 +68,18 @@ namespace TwitchFliesOPFOR
                     {
                         return "Found no refuel plane.";
                     }
+                case PilotCommand.Bomb:
+                    Actor target4 = GetActor(args[0]);
+                    if (target4 != null)
+                    {
+                        waypoint.GetTransform().position = target4.position;
+                        aircraftSpawn.BombWaypoint(waypoint, UnityEngine.Random.Range(0f, 360f), 5, aircraftSpawn.aiPilot.defaultAltitude);
+                        return "Bombing " + target4.name + "!";
+                    }
+                    else
+                    {
+                        return "No such target " + args[0] + " exists.";
+                    }
                 case PilotCommand.CM:
                     aircraftSpawn.CountermeasureProgram(true, true, 3, 0.2f);
                     return "Deploying CMs!";
@@ -92,9 +104,48 @@ namespace TwitchFliesOPFOR
                 case PilotCommand.Eject:
                     actor.health.Kill();
                     return "Punch out!";
+                case PilotCommand.Kamikaze:
+                    Actor target5 = GetActor(args[0]);
+                    if (target5 != null)
+                    {
+                        if (target5.role == Actor.Roles.Ground || target5.role == Actor.Roles.GroundArmor || target5.role == Actor.Roles.Ship) {
+                            aircraftSpawn.aiPilot.gunRunMinAltitude = float.MinValue;
+                            aircraftSpawn.aiPilot.gunGroundMaxRange = 50;
+                            aircraftSpawn.aiPilot.minAltClimbThresh = float.MinValue;
+                            aircraftSpawn.aiPilot.minAltitude = float.MinValue;
+                            aircraftSpawn.aiPilot.obstacleCheckAheadTime = 0;
+                            wm.MarkAllJettison();
+                            wm.JettisonMarkedItems();
+                            aircraftSpawn.AttackTarget(GetUnitReference(target5));
+                            return "BANZAI!";
+                        }
+                        else
+                        {
+                            return "Can only kamikaze ground targets.";
+                        }
+                        
+                    }
+                    else
+                    {
+                        return "No such target " + args[0] + " exists.";
+                    }
                 default:
                     return base.Command(command, args);
             }
+        }
+
+        public override string SITREP()
+        {
+            AIAircraftSpawn aircraftSpawn = (AIAircraftSpawn)unitSpawn;
+
+            string output = base.SITREP();
+            output += "Mode: " + aircraftSpawn.aiPilot.commandState.ToString() + "\n";
+            output += "Heading: " + Mathf.Round(aircraftSpawn.aiPilot.autoPilot.flightInfo.heading) + "\n";
+            output += "Pitch: " + Mathf.Round(aircraftSpawn.aiPilot.autoPilot.flightInfo.pitch) + "\n";
+            output += "Velocity: " + Mathf.Round(aircraftSpawn.aiPilot.autoPilot.flightInfo.surfaceSpeed * 1.94384f) + " knots\n";
+            output += "Altitude: " + Mathf.Round(aircraftSpawn.aiPilot.autoPilot.flightInfo.altitudeASL * 3.28084f) + " feet\n";
+            output += Mathf.Round(aircraftSpawn.aiPilot.autoPilot.flightInfo.currentInstantaneousG) + "G\n";
+            return output;
         }
 
         Runway GetRunway()

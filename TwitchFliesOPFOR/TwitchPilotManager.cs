@@ -21,7 +21,6 @@ namespace TwitchFliesOPFOR
         }
 
         public List<TwitchPilotBase> pilots;
-        public VTOLAPI vtol;
 
         public void Start()
         {
@@ -36,7 +35,7 @@ namespace TwitchFliesOPFOR
             }
             else
             {
-                return username + " could not find an actor called: " + targetName;
+                return username + ", could not find an actor called: " + targetName;
             }
         }
 
@@ -49,7 +48,7 @@ namespace TwitchFliesOPFOR
                 }
                 else
                 {
-                    if (actor.gameObject == vtol.GetPlayersVehicleGameObject())
+                    if (actor.gameObject == VTOLAPI.instance.GetPlayersVehicleGameObject())
                     {
                         return "You aren't allowed to control the player.";
                     }
@@ -103,7 +102,7 @@ namespace TwitchFliesOPFOR
                         pilot.actor = actor;
                         pilot.wm = pilot.actor.weaponManager;
                         pilot.username = username;
-                        pilot.player = vtol.GetPlayersVehicleGameObject();
+                        pilot.player = VTOLAPI.instance.GetPlayersVehicleGameObject();
                         pilot.Start();
                         pilots.Add(pilot);
                         return username + ", " + message;
