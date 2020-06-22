@@ -44,7 +44,7 @@ Commands:
 
 !chaff - Deploy countermeasures to confuse a radar guided missile
 
-!flare - Wow aren't you fancy, countermeasures agains heat seaking missiles
+!flare - Wow aren't you fancy, countermeasures against heat seaking missiles
 
 !dropempty- Jettison empty fueltanks/weapons
 
