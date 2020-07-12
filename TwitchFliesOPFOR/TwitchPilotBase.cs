@@ -85,7 +85,7 @@ namespace TwitchFliesOPFOR
 
         public void UpdateNameTag()
         {
-            if (textMesh != null && actor != null)
+            if (textMesh != null && actor != null && player != null)
             {
                 textMesh.transform.position = actor.position + new Vector3(0, nameTagHeight, 0);
                 textMesh.transform.LookAt(textMesh.transform.position + (textMesh.transform.position - player.transform.position));

@@ -48,7 +48,7 @@ namespace TwitchFliesOPFOR
                 }
                 else
                 {
-                    if (actor.gameObject == VTOLAPI.instance.GetPlayersVehicleGameObject())
+                    if (actor.gameObject == VTOLAPI.GetPlayersVehicleGameObject())
                     {
                         return "You aren't allowed to control the player.";
                     }
@@ -102,7 +102,7 @@ namespace TwitchFliesOPFOR
                         pilot.actor = actor;
                         pilot.wm = pilot.actor.weaponManager;
                         pilot.username = username;
-                        pilot.player = VTOLAPI.instance.GetPlayersVehicleGameObject();
+                        pilot.player = VTOLAPI.GetPlayersVehicleGameObject();
                         pilot.Start();
                         pilots.Add(pilot);
                         return username + ", " + message;
@@ -148,7 +148,7 @@ namespace TwitchFliesOPFOR
             string pilotName = "";
             for (int i = 0; i < pilots.Count; i++)
             {
-                if (!pilots[i].actor.alive) {
+                if (!pilots[i].actor.alive || pilots[i].actor == null) {
                     pilotName = pilots[i].username;
                 }
             }
@@ -199,7 +199,7 @@ namespace TwitchFliesOPFOR
             Actor result = null;
             for (int i = 0; i < TargetManager.instance.allActors.Count; i++)
             {
-                if (TargetManager.instance.allActors[i].name.ToLower().Contains(name.ToLower()))
+                if (TargetManager.instance.allActors[i].name.ToLower().Contains(name.ToLower()) && TargetManager.instance.allActors[i].transform.parent == null)
                 {
                     result = TargetManager.instance.allActors[i];
                 }

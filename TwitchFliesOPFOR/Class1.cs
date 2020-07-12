@@ -7,6 +7,7 @@ using UnityEngine;
 using TwitchLib.Client.Models;
 using TwitchLib.Unity;
 using System.IO;
+using System.Collections;
 
 namespace TwitchFliesOPFOR
 {
@@ -14,18 +15,26 @@ namespace TwitchFliesOPFOR
     {
         string USERNAME_FROM_OAUTH_TOKEN = "";
         string OAUTH_TOKEN = "";
-        string help = "";
         private Client _client;
         TwitchPilotManager manager;
         TwitchChat chat;
 
         public override void ModLoaded()
         {
-            string address = Directory.GetCurrentDirectory() + @"\VTOLVR_ModLoader\mods\Twitch Flies OPFOR\";
-            USERNAME_FROM_OAUTH_TOKEN = File.ReadAllText(address + "channel.txt");
-            OAUTH_TOKEN = File.ReadAllText(address + "token.txt");
+            string address = Directory.GetCurrentDirectory() + @"\VTOLVR_ModLoader\mods\TwitchFliesOPFOR\";
+            try
+            {
+                USERNAME_FROM_OAUTH_TOKEN = File.ReadAllText(address + "channel.txt");
+                OAUTH_TOKEN = File.ReadAllText(address + "token.txt");
+                Debug.Log("Token and channel loaded!");
+            }
+            catch {
+                Debug.Log("Token and channel loaded failed to load, commiting die!");
+                Destroy(gameObject);
+            }
 
             VTOLAPI.SceneLoaded += SceneLoaded;
+            VTOLAPI.MissionReloaded += MissionReloaded;
 
             chat = new TwitchChat();
             chat.StartTwitchChat();
@@ -38,7 +47,23 @@ namespace TwitchFliesOPFOR
 
         private void SceneLoaded(VTOLScenes scene)
         {
-            chat.Create3DChat(VTOLAPI.instance.GetPlayersVehicleGameObject(), VTOLAPI.GetPlayersVehicleEnum());
+            chat.Create3DChat(VTOLAPI.GetPlayersVehicleGameObject(), VTOLAPI.GetPlayersVehicleEnum(), scene);
+            manager.Start();
+        }
+
+        private void MissionReloaded()
+        {
+            StartCoroutine("SetupScene");
+        }
+
+        private IEnumerator SetupScene()
+        {
+            while (VTMapManager.fetch == null || !VTMapManager.fetch.scenarioReady || FlightSceneManager.instance.switchingScene)
+            {
+                yield return null;
+            }
+            chat.Create3DChat(VTOLAPI.GetPlayersVehicleGameObject(), VTOLAPI.GetPlayersVehicleEnum(), VTOLScenes.Akutan);
+            manager.Start();
         }
 
         void ConnectTwitchClient()
@@ -64,6 +89,7 @@ namespace TwitchFliesOPFOR
         private void OnConnected(object sender, TwitchLib.Client.Events.OnConnectedArgs e)
         {
             Debug.Log($"The bot {e.BotUsername} succesfully connected to Twitch.");
+            chat.NewMessage(new TwitchChat.Message("TwitchFliesOPFOR", "Connected to twitch!"));
 
             if (!string.IsNullOrWhiteSpace(e.AutoJoinChannel))
                 Debug.Log($"The bot will now attempt to automatically join the channel provided when the Initialize method was called: {e.AutoJoinChannel}");
@@ -72,6 +98,7 @@ namespace TwitchFliesOPFOR
         private void OnJoinedChannel(object sender, TwitchLib.Client.Events.OnJoinedChannelArgs e)
         {
             Debug.Log($"The bot {e.BotUsername} just joined the channel: {e.Channel}");
+            chat.NewMessage(new TwitchChat.Message("TwitchFliesOPFOR", "Connected to channel!"));
             _client.SendMessage(e.Channel, "VTOL VR connected!");
         }
 
@@ -219,9 +246,11 @@ namespace TwitchFliesOPFOR
                 string temp = "";
                 for (int i = 0; i < TargetManager.instance.allActors.Count; i++)
                 {
-                    temp += TargetManager.instance.allActors[i].name + "\n";
+                    if (TargetManager.instance.allActors[i].transform.parent == null) {
+                        temp += TargetManager.instance.allActors[i].name + "\n";
+                    }
                 }
-                GUI.TextArea(new Rect(1920 - 300, 100, 200, 800), temp);
+                GUI.TextArea(new Rect(Screen.width - 300, 100, 200, 800), temp);
             }
             if (VTScenario.current != null)
             {
@@ -230,14 +259,16 @@ namespace TwitchFliesOPFOR
                 {
                     temp2 += airportId + "\n";
                 }
-                GUI.TextArea(new Rect(1920 - 400, 100, 100, 100), temp2);
+                GUI.TextArea(new Rect(Screen.width - 400, 100, 100, 100), temp2);
             }
             string temp3 = "";
             foreach (TwitchPilotBase pilot in manager.pilots)
             {
-                temp3 += pilot.SITREP() + "\n";
+                if (pilot != null) {
+                    temp3 += pilot.SITREP() + "\n";
+                }
             }
-            GUI.TextArea(new Rect(1920 - 500, 200, 200, 700), temp3);
+            GUI.TextArea(new Rect(Screen.width - 500, 200, 200, 700), temp3);
         }
 
         public string StringCombiner(List<string> args) {

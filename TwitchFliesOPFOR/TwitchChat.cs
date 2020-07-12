@@ -29,7 +29,8 @@ namespace TwitchFliesOPFOR
         public void StartTwitchChat()
         {
             messages = new List<Message>();
-            Create3DChat(null, VTOLVehicles.None);
+            Create3DChat(null, VTOLVehicles.None, VTOLScenes.ReadyRoom);
+            NewMessage(new Message("TwitchFliesOPFOR", "Mod Loaded!"));
         }
 
         public void NewMessage(Message message)
@@ -43,7 +44,7 @@ namespace TwitchFliesOPFOR
             Update3DChat();
         }
 
-        public void Create3DChat(GameObject jet, VTOLVehicles type) {
+        public void Create3DChat(GameObject jet, VTOLVehicles type, VTOLScenes scene) {
             GameObject temp = new GameObject();
             GameObject temp3 = UnityEngine.Object.Instantiate(temp);
 
@@ -75,7 +76,15 @@ namespace TwitchFliesOPFOR
                 textMesh.transform.LookAt(textMesh.transform.position + -jet.transform.right);
             }
             else {
-                textMesh.transform.position = new Vector3(0, 1, 1);
+                switch (scene)
+                {
+                    case VTOLScenes.ReadyRoom:
+                        textMesh.transform.position = new Vector3(-3, -0.5f, -0.5f);
+                        break;
+                    default:
+                        textMesh.transform.position = new Vector3(0, 1, 1);
+                        break;
+                }
                 textMesh.transform.position += Vector3.up * 3;
             }
             Update3DChat();
