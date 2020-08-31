@@ -167,26 +167,27 @@ namespace TwitchFliesOPFOR
         public ActorType GetActorType(Actor actor)
         {
             ActorType type = ActorType.Other;
-            if (actor.unitSpawn as AIAircraftSpawn != null) {
+            UnitSpawn unitSpawn = actor.GetComponent<UnitSpawn>();
+            if (unitSpawn as AIAircraftSpawn != null) {
                 type = ActorType.Plane;
             }
-            if (actor.unitSpawn as AISeaUnitSpawn != null)
+            if (unitSpawn as AISeaUnitSpawn != null)
             {
                 type = ActorType.Boat;
             }
-            if (actor.unitSpawn as AICarrierSpawn != null)
+            if (unitSpawn as AICarrierSpawn != null)
             {
                 type = ActorType.Carrier;
             }
-            if (actor.unitSpawn as AIDroneCarrierSpawn != null)
+            if (unitSpawn as AIDroneCarrierSpawn != null)
             {
                 type = ActorType.DroneCarrier;
             }
-            if (actor.unitSpawn as GroundUnitSpawn != null)
+            if (unitSpawn as GroundUnitSpawn != null)
             {
                 type = ActorType.Tank;
             }
-            if (actor.unitSpawn as ArtilleryUnitSpawn != null)
+            if (unitSpawn as ArtilleryUnitSpawn != null)
             {
                 type = ActorType.Artillery;
             }
